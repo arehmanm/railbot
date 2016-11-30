@@ -1,11 +1,15 @@
-# Standard imports
+# Standard imports 
 import cv2
 import numpy as np
 from algos import algo1
+import constants
+
+low = constants.low_blue
+high = constants.high_blue
 
 def callback(val):
     n = cv2.getTrackbarPos('Image', 'Control')
-    imgOriginal = cv2.imread("../output/output" + str(n) + ".png")
+    imgOriginal = cv2.imread("../output/output" + str(n+37) + ".png")
     
     low = (cv2.getTrackbarPos('LowH', 'Control'), cv2.getTrackbarPos('LowS', 'Control'), cv2.getTrackbarPos('LowV', 'Control'))
     high = (cv2.getTrackbarPos('HighH', 'Control'), cv2.getTrackbarPos('HighS', 'Control'), cv2.getTrackbarPos('HighV', 'Control'))
@@ -23,16 +27,16 @@ def callback(val):
         cv2.imshow("Control", img2)
     
 cv2.namedWindow("Control")
-cv2.createTrackbar("Image", "Control", 0, 100, callback); #Hue (0 - 179)
+cv2.createTrackbar("Image", "Control", 0, 200, callback); #Hue (0 - 179)
 #Create trackbars in "Control" window
-cv2.createTrackbar("LowH", "Control", 1, 255, callback); #Hue (0 - 179)
-cv2.createTrackbar("HighH", "Control", 9, 179, callback);
+cv2.createTrackbar("LowH", "Control", low[0], 255, callback); #Hue (0 - 179)
+cv2.createTrackbar("HighH", "Control", high[0], 179, callback);
 
-cv2.createTrackbar("LowS", "Control", 190, 254, callback); #Saturation (0 - 255)
-cv2.createTrackbar("HighS", "Control", 254, 255, callback);
+cv2.createTrackbar("LowS", "Control", low[1], 254, callback); #Saturation (0 - 255)
+cv2.createTrackbar("HighS", "Control", high[1], 255, callback);
 
-cv2.createTrackbar("LowV", "Control", 150, 254, callback);#Value (0 - 255)
-cv2.createTrackbar("HighV", "Control", 254, 255, callback);
+cv2.createTrackbar("LowV", "Control", low[2], 254, callback);#Value (0 - 255)
+cv2.createTrackbar("HighV", "Control", high[2], 255, callback);
 
 callback(0)
 cv2.waitKey()

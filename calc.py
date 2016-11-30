@@ -5,7 +5,7 @@ from datetime import datetime
 
 count = 0
 
-def getCenter(img):
+def getCenter(img, low, high):
     global count
     img2 = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     cv2.imwrite("output/output" + str(count) + ".png", img2)
@@ -13,8 +13,6 @@ def getCenter(img):
 
     height, width, channels = img.shape
     #img = img[:, 0:width - 60]
-    low = (1, 190, 150)
-    high = (9, 254, 254)
     ret = algo1.run(img, low, high, cv2.COLOR_RGB2HSV)
     if ret:
         (image, blur, center) = ret
