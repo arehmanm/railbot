@@ -7,8 +7,8 @@ from datetime import datetime
 import operator
 #change this to your log file's path
 
-screen = [1920, 1200]
-window = [800, 600]
+screen = [1600, 900]
+window = [640, 480]
 imp = [400, 300]
 diff = [(p-q)/2 for (p,q) in zip(window, imp)]
 
