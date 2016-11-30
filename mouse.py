@@ -3,6 +3,15 @@ from datetime import datetime
 import autopy
 from Xlib import X, display
 import pyautogui
+import uinput
+import time
+
+device = uinput.Device([
+        uinput.BTN_LEFT,
+        uinput.BTN_RIGHT,
+        uinput.REL_X,
+        uinput.REL_Y,
+        ])
 
 def click():
     capabilities = {
@@ -14,29 +23,24 @@ def click():
         ui.write(e.EV_KEY, e.BTN_LEFT, 1)
         ui.syn()
 
-def shoot3(coords, screen, window):
+def click2():
+    device = uinput.Device([
+            uinput.BTN_LEFT,
+            uinput.BTN_RIGHT,
+            uinput.REL_X,
+            uinput.REL_Y,
+            ])
+    time.sleep(0.01)
+    device.emit(uinput.BTN_LEFT, 1)
+
+def shoot1(coords, screen, window):
     time1 = datetime.now()
     center = [p/2 for p in window]
+    print window
     offset = [p-q for p, q in zip(coords, center)]
     #print "offset: " + str(offset)
     offset =  [int(p) for p in offset]
-    
-    (x, y) = autopy.mouse.get_pos()
-    print (x, y)
-    print offset
-    #autopy.mouse.smooth_move(x+offset[0], y+offset[1])
-    pyautogui.moveRel(offset[0], offset[1])
-    autopy.mouse.click()
-    time2 = datetime.now()
-    print "shoot: " + str((time2 - time1).microseconds / 1000) + " ms"
-      
-def shoot(coords, screen, window):
-    time1 = datetime.now()
-    center = [p/2 for p in window]
-    offset = [p-q for p, q in zip(coords, center)]
     #print "offset: " + str(offset)
-    offset =  [int(p) for p in offset]
-    #print offset
     
     capabilities = {
         e.EV_REL : (e.REL_X, e.REL_Y), 
@@ -53,10 +57,22 @@ def shoot(coords, screen, window):
     print "shoot: " + str((time2 - time1).microseconds / 1000) + " ms"
 #shoot([10, 10], [1600, 900], [640, 480])
 
+def shoot2(coords, screen, window):
+    global device
+    center = [p/2 for p in window]
+    offset = [p-q for p, q in zip(coords, center)]
+    offset =  [int(p) for p in offset]
+    #print "offset: " + str(offset)
+    
+    device.emit(uinput.REL_X, offset[0])
+    device.emit(uinput.REL_Y, offset[1])
+    device.emit_click(uinput.BTN_LEFT, 0)
+    device.emit_click(uinput.BTN_LEFT, 1)
+
+def shoot(coords, screen, window):
+    shoot2(coords, screen, window)
 
 time1 = datetime.now()
-d = display.Display()
-d.warp_pointer(300,300)
-d.sync()
+click2()
 time2 = datetime.now()
 print "shoot: " + str((time2 - time1).microseconds / 1000) + " ms"
