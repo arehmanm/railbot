@@ -18,7 +18,7 @@ def getCenter(img, low, high):
         (image, blur, center) = ret
         #img2 = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         #cv2.imwrite("output/output" + str(count) + ".png", img2)
-        count = count + 1
+        #count = count + 1
         return center
 
 def getDiff(img1, img2):

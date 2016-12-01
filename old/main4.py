@@ -4,12 +4,12 @@ import numpy as np
 from algos import algo1
 import constants
 
-low = constants.low_blue
-high = constants.high_blue
+low = constants.low_red
+high = constants.high_red
 
 def callback(val):
     n = cv2.getTrackbarPos('Image', 'Control')
-    imgOriginal = cv2.imread("../output/output" + str(n+37) + ".png")
+    imgOriginal = cv2.imread("../output/output" + str(n) + ".png")
     
     low = (cv2.getTrackbarPos('LowH', 'Control'), cv2.getTrackbarPos('LowS', 'Control'), cv2.getTrackbarPos('LowV', 'Control'))
     high = (cv2.getTrackbarPos('HighH', 'Control'), cv2.getTrackbarPos('HighS', 'Control'), cv2.getTrackbarPos('HighV', 'Control'))

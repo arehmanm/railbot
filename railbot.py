@@ -6,6 +6,7 @@ import mouse
 from datetime import datetime
 import operator
 import constants
+import time
 #change this to your log file's path
 
 low = constants.low_blue
@@ -49,7 +50,7 @@ def algo2():
     #print center
     if center1 and center2:
         offset = [q-p for (p, q) in zip(center1, center2)]
-        new_center = [multiplier*p+q for (p, q) in zip(offset, center2)]
+        new_center = (multiplier*offset[0]+center2[0], offset[1]+center2[1])
         mouse.shoot(new_center, constants.screen, constants.window)
     print "shoot: " + str((datetime.now() - time1).microseconds / 1000) + " ms"
     time1 = datetime.now()
@@ -71,16 +72,19 @@ def OnKeyPress(event):
         time2 = datetime.now()
         time3 = time2 - time1
         print "total: " + str(time3.microseconds / 1000) + " ms"
-    elif event.Key == "P_Add":
+        time.sleep(0.1)
+        img = snapshot.snapshot(constants.screen, constants.window, constants.imp)
+        center = calc.getCenter(numpy.array(img), low, high)
+    elif event.Key == "apostrophe":
         multiplier += 1
         print "\nmutiplier: " + str(multiplier)
-    elif event.Key == "P_Subtract":
+    elif event.Key == "semicolon":
         multiplier -= 1
         print "\nmutiplier: " + str(multiplier)
-    elif event.Key == "P_End":
+    elif event.Key == "bracketleft":
         algo = algo1
         print "\n**** Setting algo1 ****"
-    elif event.Key == "P_Down":
+    elif event.Key == "bracketright":
         algo = algo2
         print "\n**** Setting algo2 ****"
     elif event.Key == "minus":

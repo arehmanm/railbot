@@ -72,7 +72,3 @@ def shoot2(coords, screen, window):
 def shoot(coords, screen, window):
     shoot2(coords, screen, window)
 
-time1 = datetime.now()
-click2()
-time2 = datetime.now()
-print "shoot: " + str((time2 - time1).microseconds / 1000) + " ms"

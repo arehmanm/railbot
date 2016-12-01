@@ -18,9 +18,10 @@ def run(img, low, high, format):
     #imgThresholded = cv2.dilate(imgThresholded, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5)) );
     #imgThresholded = cv2.erode(imgThresholded, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5)) );
     #'''
-    blur = cv2.medianBlur(imgThresholded, 5)
+    imgThresholded = cv2.morphologyEx(imgThresholded, cv2.MORPH_CLOSE, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (9, 9)))
+    #blur = cv2.medianBlur(imgThresholded, 5)
     #blur = cv2.dilate(blur, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5)))
-    #blur = imgThresholded.copy()
+    blur = imgThresholded.copy()
     blur2 = blur.copy()
     
     #cv2.imshow("Control", blur); #show the thresholded image
@@ -48,7 +49,7 @@ def run(img, low, high, format):
         mu = cv2.moments(max_cont, True);
         if mu['m00'] != 0:
             center = (int(mu['m10'] / mu['m00']), int(mu['m01'] / mu['m00']));
-            cv2.circle(img, center, 5, (255, 134, 100), 2);
+            #cv2.circle(img, center, 5, (255, 134, 100), 2);
             #cv2.imshow("Control", imgOriginal)
             #cv2.imshow("Control2", blur)
             #cv2.imwrite("output/thresh" + str(count) + ".png", blur2)
