@@ -89,7 +89,7 @@ def OnKeyPress(event):
         time2 = datetime.now()
         time3 = time2 - time1
         print "total: " + str(time3.microseconds / 1000) + " ms"
-        for i in range(6):
+        for i in range(2):
             time.sleep(0.025)
             img = snapshot.snapshot(constants.screen, constants.window, constants.imp)
             center = calc.getCenter(numpy.array(img), low, high)
