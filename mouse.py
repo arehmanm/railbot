@@ -33,7 +33,7 @@ def click2():
     time.sleep(0.01)
     device.emit(uinput.BTN_LEFT, 1)
 
-def shoot1(coords, screen, window):
+def shoot1(coords, screen, window, sens=1.0):
     time1 = datetime.now()
     center = [p/2 for p in window]
     print window
@@ -57,11 +57,11 @@ def shoot1(coords, screen, window):
     print "shoot: " + str((time2 - time1).microseconds / 1000) + " ms"
 #shoot([10, 10], [1600, 900], [640, 480])
 
-def shoot2(coords, screen, window):
+def shoot2(coords, screen, window, sens=1.0):
     global device
     center = [p/2 for p in window]
     offset = [p-q for p, q in zip(coords, center)]
-    offset =  [int(p) for p in offset]
+    offset =  [int(p*sens) for p in offset]
     #print "offset: " + str(offset)
     
     device.emit(uinput.REL_X, offset[0])
@@ -69,6 +69,6 @@ def shoot2(coords, screen, window):
     device.emit_click(uinput.BTN_LEFT, 0)
     device.emit_click(uinput.BTN_LEFT, 1)
 
-def shoot(coords, screen, window):
-    shoot2(coords, screen, window)
+def shoot(coords, screen, window, sens=1.0):
+    shoot2(coords, screen, window, sens)
 
