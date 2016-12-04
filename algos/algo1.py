@@ -4,6 +4,7 @@ import cv2
 imgOriginal = cv2.imread("test.png")
 #print type(imgOriginal)
 count = 0
+import math
 
 def run(img, low, high, format):
     global count
@@ -26,24 +27,29 @@ def run(img, low, high, format):
     
     #cv2.imshow("Control", blur); #show the thresholded image
     #cv2.imshow("Original", imgOriginal); //show the original image
-    vals = cv2.findContours(blur, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    vals = cv2.findContours(blur, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
     #print len(vals[1])
     if len(vals[1]) > 0:
+        #for v in vals[1]:
+        #    if len(v) > 5:
+        #        e = cv2.fitEllipse(v)
+        #        cv2.ellipse(img, e, (0, 255, 0), 2)
+
         def compare(a):
             if len(a) > 5:
                 e1 = cv2.fitEllipse(a)
-                if e1[1][0] > 0:
-                    ratio = e1[1][1] / e1[1][0]
-                else:
-                    ratio = 0
-                print e1
-                print ratio
-                print e1[2]
-                return 360 - e1[2]
+                #if e1[1][0] > 0:
+                #    ratio = e1[1][1] / e1[1][0]
+                #else:
+                #    ratio = 0
+                #print e1
+                #print ratio
+                # e1[2]
+                return math.cos(e1[2]*math.pi/90.0)
             else:
                 return 0
 
-        max_cont = max(vals[1], key=cv2.contourArea)
+        max_cont = max(vals[1], key=compare)
         #cv2.drawContours(img, vals[1], -1, (0,255,0), 2)
     
         mu = cv2.moments(max_cont, True);

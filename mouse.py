@@ -2,7 +2,6 @@ from evdev import UInput, ecodes as e
 from datetime import datetime
 import autopy
 from Xlib import X, display
-import pyautogui
 import uinput
 import time
 

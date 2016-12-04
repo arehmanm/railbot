@@ -43,7 +43,7 @@ def algo2():
     center1 = calc.getCenter(numpy.array(img1), low, high)
     diff = (datetime.now() - time1).microseconds / 1000
     frame1 = frame1 + diff
-    print "getCenter: " + str(diff / 1000) + " ms"
+    print "getCenter: " + str(diff) + " ms"
     time1 = datetime.now()
     if center1:
         center1 = map(operator.add, center1, constants.diff)
@@ -57,8 +57,7 @@ def algo2():
     frame2 = frame2 + diff
     print "getCenter: " + str(diff) + " ms"
     time1 = datetime.now()
-    frame = (frame1 + frame2) / 2
-    multiplier = 25.0 / frame
+    multiplier = (frame2 + 25.0) / frame1
     print "Using multiplier: " + str(multiplier)
     if center2:
         center2 = map(operator.add, center2, constants.diff)
