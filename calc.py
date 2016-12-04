@@ -15,11 +15,12 @@ def getCenter(img, low, high):
     #img = img[:, 0:width - 60]
     ret = algo1.run(img, low, high, cv2.COLOR_RGB2HSV)
     if ret:
-        (image, blur, center) = ret
+        (image, blur, center, max_cnt) = ret
+        x,y,w,h = cv2.boundingRect(max_cnt)
         #img2 = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         #cv2.imwrite("output/output" + str(count) + ".png", img2)
         #count = count + 1
-        return center
+        return (center, (x-w, y-h), (3*w, 3*h))
 
 def getDiff(img1, img2):
     global count

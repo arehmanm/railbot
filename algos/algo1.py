@@ -31,9 +31,12 @@ def run(img, low, high, format):
     #print len(vals[1])
     if len(vals[1]) > 0:
         #for v in vals[1]:
-        #    if len(v) > 5:
-        #        e = cv2.fitEllipse(v)
-        #        cv2.ellipse(img, e, (0, 255, 0), 2)
+            #if len(v) > 5:
+                #e = cv2.fitEllipse(v)
+                #cv2.ellipse(img, e, (0, 255, 0), 2)
+                #x,y,w,h = cv2.boundingRect(v)
+                #cv2.rectangle(img,(x,y),(x+w,y+h),(0,255,0),2)
+
 
         def compare(a):
             if len(a) > 5:
@@ -45,7 +48,7 @@ def run(img, low, high, format):
                 #print e1
                 #print ratio
                 # e1[2]
-                return math.cos(e1[2]*math.pi/90.0)
+                return cv2.contourArea(a) * abs(math.cos(e1[2]*math.pi/180.0))
             else:
                 return 0
 
@@ -56,12 +59,14 @@ def run(img, low, high, format):
         if mu['m00'] != 0:
             center = (int(mu['m10'] / mu['m00']), int(mu['m01'] / mu['m00']));
             #cv2.circle(img, center, 5, (255, 134, 100), 2);
+            #x,y,w,h = cv2.boundingRect(max_cont)
+            #cv2.rectangle(img,(x,y),(x+w,y+h),(0,255,0),2)
             #cv2.imshow("Control", imgOriginal)
             #cv2.imshow("Control2", blur)
             #cv2.imwrite("output/thresh" + str(count) + ".png", blur2)
             #img2 = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
             #cv2.imwrite("output/output" + str(count) + ".png", img2)
             count = count + 1
-            return (img, blur2, center)
+            return (img, blur2, center, max_cont)
     else:
         print "sorry, 0 m00"

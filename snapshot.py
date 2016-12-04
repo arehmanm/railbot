@@ -2,9 +2,13 @@
 import pyscreenshot as ImageGrab
 import operator
 from datetime import datetime
-import cv2
-import numpy
 import gtk.gdk
+
+def screenshot(rectpos, rectsize):
+    w = gtk.gdk.get_default_root_window()
+    pb = gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, False, 8, rectsize[0], rectsize[1])
+    pb = pb.get_from_drawable(w, w.get_colormap(), rectpos[0], rectpos[1], 0, 0, rectsize[0], rectsize[1])
+    return pb.get_pixels_array()
 
 def snapshot(screen, window, imp):
     diff = [(p-q)/2 for (p,q) in zip(window, imp)]
@@ -13,12 +17,7 @@ def snapshot(screen, window, imp):
     screen = map(operator.sub, screen, diff)
     pos.extend(screen)
     #print pos
-
-    w = gtk.gdk.get_default_root_window()
-    sz = w.get_size()
-    pb = gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, False, 8, imp[0], imp[1])
-    pb = pb.get_from_drawable(w, w.get_colormap(), pos[0], pos[1], 0, 0, imp[0], imp[1])
-    return pb.get_pixels_array()
+    return screenshot((pos[0], pos[1]), (imp[0], imp[1]))
     
 def snapshot2(screen, window):
     time1 = datetime.now()

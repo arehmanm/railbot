@@ -19,9 +19,12 @@ def algo1():
     img = snapshot.snapshot(constants.screen, constants.window, constants.imp)
     print "snapshot: " + str((datetime.now() - time1).microseconds / 1000) + " ms"
     time1 = datetime.now()
-    center = calc.getCenter(numpy.array(img), low, high)
-    if center:
+    retval = calc.getCenter(numpy.array(img), low, high)
+    if retval:
+        (center, rectpos, rectsize) = retval
         center = map(operator.add, center, constants.diff)
+    else:
+        return
     print "getCenter: " + str((datetime.now() - time1).microseconds / 1000) + " ms"
     time1 = datetime.now()
     #print center
@@ -40,28 +43,42 @@ def algo2():
     frame1 = frame1 + diff
     print "snapshot: " + str(diff) + " ms"
     time1 = datetime.now()
-    center1 = calc.getCenter(numpy.array(img1), low, high)
+    retval = calc.getCenter(numpy.array(img1), low, high)
     diff = (datetime.now() - time1).microseconds / 1000
     frame1 = frame1 + diff
     print "getCenter: " + str(diff) + " ms"
     time1 = datetime.now()
-    if center1:
+    if retval:
+        (center1, rectpos, rectsize) = retval
         center1 = map(operator.add, center1, constants.diff)
-    img2 = snapshot.snapshot(constants.screen, constants.window, constants.imp)
+        rectpos = map(operator.add, rectpos, constants.diff)
+        rectpos = map(operator.sub, rectpos, constants.window)
+        rectpos = map(operator.add, rectpos, constants.screen)
+    else:
+        return
+    #img2 = snapshot.snapshot(constants.screen, constants.window, constants.imp)
+    img2 = snapshot.screenshot(rectpos, rectsize)
     diff = (datetime.now() - time1).microseconds / 1000
     frame2 = frame2 + diff
     print "snapshot: " + str(diff) + " ms"
     time1 = datetime.now()
-    center2 = calc.getCenter(numpy.array(img2), low, high)
+    retval = calc.getCenter(numpy.array(img2), low, high)
+    if retval:
+        (center2, rectpos2, rectsize2) = retval
+    else:
+        return
     diff = (datetime.now() - time1).microseconds / 1000
     frame2 = frame2 + diff
     print "getCenter: " + str(diff) + " ms"
     time1 = datetime.now()
+    if center2:
+        center2 = map(operator.add, center2, rectpos)
+        center2 = map(operator.add, center2, constants.window)
+        center2 = map(operator.sub, center2, constants.screen)
+    #print center
+
     multiplier = (frame2 + 25.0) / frame1
     print "Using multiplier: " + str(multiplier)
-    if center2:
-        center2 = map(operator.add, center2, constants.diff)
-    #print center
     if center1 and center2:
         offset = [q-p for (p, q) in zip(center1, center2)]
         new_center = (multiplier*offset[0]+center2[0], multiplier*offset[1]+center2[1])
@@ -91,7 +108,7 @@ def OnKeyPress(event):
         for i in range(2):
             time.sleep(0.025)
             img = snapshot.snapshot(constants.screen, constants.window, constants.imp)
-            center = calc.getCenter(numpy.array(img), low, high)
+            calc.getCenter(numpy.array(img), low, high)
         time1 = datetime.now()
         os.system("xinput set-prop " + mouseid + " \"Device Enabled\" 1")
         print "enable mouse: " + str((datetime.now() - time1).microseconds / 1000) + " ms"
