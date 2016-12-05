@@ -17,7 +17,7 @@ high = constants.high_blue
 def algo1():
     time1 = datetime.now()
     img = snapshot.snapshot(constants.screen, constants.window, constants.imp)
-    print "snapshot: " + str((datetime.now() - time1).microseconds / 1000) + " ms"
+    print "snapshot: " + str((datetime.now() - time1).microseconds / 1000.0) + " ms"
     time1 = datetime.now()
     retval = calc.getCenter(numpy.array(img), low, high)
     if retval:
@@ -25,13 +25,13 @@ def algo1():
         center = map(operator.add, center, constants.diff)
     else:
         return
-    print "getCenter: " + str((datetime.now() - time1).microseconds / 1000) + " ms"
+    print "getCenter: " + str((datetime.now() - time1).microseconds / 1000.0) + " ms"
     time1 = datetime.now()
     #print center
     if center:
         mouse.shoot(center, constants.screen, constants.window)
     time2 = datetime.now()
-    print "shoot: " + str((datetime.now() - time1).microseconds / 1000) + " ms"
+    print "shoot: " + str((datetime.now() - time1).microseconds / 1000.0) + " ms"
 
 def algo2():
     global sensitivity
@@ -39,14 +39,14 @@ def algo2():
     frame2 = 0
     time1 = datetime.now()
     img1 = snapshot.snapshot(constants.screen, constants.window, constants.imp)
-    diff = (datetime.now() - time1).microseconds / 1000
-    frame1 = frame1 + diff
-    print "snapshot: " + str(diff) + " ms"
+    diff = (datetime.now() - time1).microseconds
+    frame1 = frame1 + diff/2.0
+    print "snapshot: " + str(diff / 1000.0) + " ms"
     time1 = datetime.now()
     retval = calc.getCenter(numpy.array(img1), low, high)
-    diff = (datetime.now() - time1).microseconds / 1000
+    diff = (datetime.now() - time1).microseconds
     frame1 = frame1 + diff
-    print "getCenter: " + str(diff) + " ms"
+    print "getCenter: " + str(diff / 1000.0) + " ms"
     time1 = datetime.now()
     if retval:
         (center1, rectpos, rectsize) = retval
@@ -58,18 +58,18 @@ def algo2():
         return
     #img2 = snapshot.snapshot(constants.screen, constants.window, constants.imp)
     img2 = snapshot.screenshot(rectpos, rectsize)
-    diff = (datetime.now() - time1).microseconds / 1000
+    diff = (datetime.now() - time1).microseconds
     frame2 = frame2 + diff
-    print "snapshot: " + str(diff) + " ms"
+    print "snapshot: " + str(diff / 1000.0) + " ms"
     time1 = datetime.now()
     retval = calc.getCenter(numpy.array(img2), low, high)
     if retval:
         (center2, rectpos2, rectsize2) = retval
     else:
         return
-    diff = (datetime.now() - time1).microseconds / 1000
+    diff = (datetime.now() - time1).microseconds
     frame2 = frame2 + diff
-    print "getCenter: " + str(diff) + " ms"
+    print "getCenter: " + str(diff / 1000.0) + " ms"
     time1 = datetime.now()
     if center2:
         center2 = map(operator.add, center2, rectpos)
@@ -77,13 +77,13 @@ def algo2():
         center2 = map(operator.sub, center2, constants.screen)
     #print center
 
-    multiplier = (frame2 + 25.0) / frame1
+    multiplier = (frame2 + 25000.0) / frame1
     print "Using multiplier: " + str(multiplier)
     if center1 and center2:
         offset = [q-p for (p, q) in zip(center1, center2)]
         new_center = (multiplier*offset[0]+center2[0], multiplier*offset[1]+center2[1])
         mouse.shoot(new_center, constants.screen, constants.window, sensitivity)
-    print "shoot: " + str((datetime.now() - time1).microseconds / 1000) + " ms"
+    print "shoot: " + str((datetime.now() - time1).microseconds / 1000.0) + " ms"
 
 sensitivity = 0.9
 algo = algo1
@@ -104,11 +104,12 @@ def OnKeyPress(event):
         #mouse.click()
         time2 = datetime.now()
         time3 = time2 - time1
-        print "total: " + str(time3.microseconds / 1000) + " ms"
-        for i in range(2):
+        print "total: " + str(time3.microseconds / 1000.0) + " ms"
+        for i in range(4):
             time.sleep(0.025)
             img = snapshot.snapshot(constants.screen, constants.window, constants.imp)
-            calc.getCenter(numpy.array(img), low, high)
+            #calc.getCenter(numpy.array(img), low, high)
+        #time.sleep(0.1)
         time1 = datetime.now()
         os.system("xinput set-prop " + mouseid + " \"Device Enabled\" 1")
         print "enable mouse: " + str((datetime.now() - time1).microseconds / 1000) + " ms"

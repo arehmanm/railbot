@@ -3,14 +3,8 @@ import cv2
 from algos import algo1
 from datetime import datetime
 
-count = 0
 
 def getCenter(img, low, high):
-    global count
-    img2 = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    cv2.imwrite("output/output" + str(count) + ".png", img2)
-    count = count + 1
-
     height, width, channels = img.shape
     #img = img[:, 0:width - 60]
     ret = algo1.run(img, low, high, cv2.COLOR_RGB2HSV)

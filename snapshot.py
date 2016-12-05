@@ -3,12 +3,24 @@ import pyscreenshot as ImageGrab
 import operator
 from datetime import datetime
 import gtk.gdk
+import numpy as np
+import cv2
+
+count = 0
 
 def screenshot(rectpos, rectsize):
+    global count
+
     w = gtk.gdk.get_default_root_window()
     pb = gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, False, 8, rectsize[0], rectsize[1])
     pb = pb.get_from_drawable(w, w.get_colormap(), rectpos[0], rectpos[1], 0, 0, rectsize[0], rectsize[1])
-    return pb.get_pixels_array()
+    pixels = pb.get_pixels_array()
+
+    img = cv2.cvtColor(np.array(pixels), cv2.COLOR_BGR2RGB)
+    cv2.imwrite("output/output" + str(count) + ".png", img)
+    count = count + 1
+
+    return pixels
 
 def snapshot(screen, window, imp):
     diff = [(p-q)/2 for (p,q) in zip(window, imp)]
