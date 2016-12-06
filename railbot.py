@@ -85,6 +85,87 @@ def algo2():
         mouse.shoot(new_center, constants.screen, constants.window, sensitivity)
     print "shoot: " + str((datetime.now() - time1).microseconds / 1000.0) + " ms"
 
+def get_diff(rectpos, rectsize, center1):
+    frame = 0
+    time1 = datetime.now()
+    img2 = snapshot.screenshot(rectpos, rectsize)
+    diff = (datetime.now() - time1).microseconds
+    frame = frame + diff
+    print "snapshot: " + str(diff / 1000.0) + " ms"
+    time1 = datetime.now()
+    retval = calc.getCenter(numpy.array(img2), low, high)
+    if retval:
+        (center2, rectpos2, rectsize2) = retval
+    else:
+        return
+
+    diff = (datetime.now() - time1).microseconds
+    frame = frame + diff
+    print "getCenter: " + str(diff / 1000.0) + " ms"
+    time1 = datetime.now()
+    if center2:
+        center2 = map(operator.add, center2, rectpos)
+        center2 = map(operator.add, center2, constants.window)
+        center2 = map(operator.sub, center2, constants.screen)
+    #print center
+
+    if center1 and center2:
+        offset = [q-p for (p, q) in zip(center1, center2)]
+        rectpos2 = [p+q for (p,q) in zip(rectpos, offset)]
+        return (rectpos2, center2, frame)
+    else:
+        return (0, 0, 0)
+
+def algo3():
+    global sensitivity
+    frame1 = 0
+    frame2 = 0
+    time1 = datetime.now()
+    img1 = snapshot.snapshot(constants.screen, constants.window, constants.imp)
+    diff = (datetime.now() - time1).microseconds
+    frame1 = frame1 + diff/2.0
+    print "snapshot: " + str(diff / 1000.0) + " ms"
+    time1 = datetime.now()
+    retval = calc.getCenter(numpy.array(img1), low, high)
+    diff = (datetime.now() - time1).microseconds
+    frame1 = frame1 + diff
+    print "getCenter: " + str(diff / 1000.0) + " ms"
+    time1 = datetime.now()
+    if retval:
+        (center1, rectpos, rectsize) = retval
+        center1 = map(operator.add, center1, constants.diff)
+        rectpos = map(operator.add, rectpos, constants.diff)
+        rectpos = map(operator.sub, rectpos, constants.window)
+        rectpos = map(operator.add, rectpos, constants.screen)
+    else:
+        return
+    #img2 = snapshot.snapshot(constants.screen, constants.window, constants.imp)
+
+    x = []
+    y = []
+    t = []
+    totaltime = frame1
+    for i in range(7):
+        (rectpos, center2, time2) = get_diff(rectpos, rectsize, center1)
+        totaltime = totaltime + time2
+        x.append(center2[0])
+        y.append(center2[1])
+        t.append(totaltime)
+        center1 = center2
+
+    print x, y, t
+    z = numpy.polyfit(t, x, 2)
+    f = numpy.poly1d(z)
+    v = numpy.polyfit(t, y, 2)
+    g = numpy.poly1d(v)
+
+    totaltime = totaltime+25000
+    new_center = (int(f(totaltime)), int(g(totaltime)))
+    print totaltime
+    print new_center
+    mouse.shoot(new_center, constants.screen, constants.window, sensitivity)
+    #print "shoot: " + str((datetime.now() - time1).microseconds / 1000.0) + " ms"
+
 sensitivity = 0.9
 algo = algo1
 
