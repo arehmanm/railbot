@@ -144,30 +144,45 @@ def algo3():
     x = []
     y = []
     t = []
-    totaltime = frame1
-    for i in range(7):
-        (rectpos, center2, time2) = get_diff(rectpos, rectsize, center1)
-        totaltime = totaltime + time2
+    totaltime = 0
+    interval = 0.01
+    sleeptime = interval
+    for i in range(3):
+        retval = get_diff(rectpos, rectsize, center1)
+        if retval:
+            (rectpos, center2, time2) = retval
+        else:
+            continue
+        sleeptime = time2 / (1000.0*1000.0)
+        if sleeptime > interval:
+            sleeptime =  interval
+        print sleeptime
+        time.sleep(interval - sleeptime)
+        totaltime = totaltime + time2 + (interval - sleeptime)*1000.0*1000.0
         x.append(center2[0])
         y.append(center2[1])
         t.append(totaltime)
         center1 = center2
 
+    if len(x) == 0:
+        return
+
+    time1 = datetime.now()
     print x, y, t
-    z = numpy.polyfit(t, x, 2)
+    z = numpy.polyfit(t, x, 1)
     f = numpy.poly1d(z)
-    v = numpy.polyfit(t, y, 2)
+    v = numpy.polyfit(t, y, 1)
     g = numpy.poly1d(v)
 
-    totaltime = totaltime+25000
-    new_center = (int(f(totaltime)), int(g(totaltime)))
+    totaltime = totaltime + (datetime.now() - time1).microseconds + 25000
+    new_center = (round(f(totaltime)), round(g(totaltime)))
     print totaltime
     print new_center
     mouse.shoot(new_center, constants.screen, constants.window, sensitivity)
     #print "shoot: " + str((datetime.now() - time1).microseconds / 1000.0) + " ms"
 
 sensitivity = 0.9
-algo = algo1
+algo = algo2
 
 #this function is called everytime a key is pressed.
 def OnKeyPress(event):
@@ -201,11 +216,11 @@ def OnKeyPress(event):
         sensitivity -= 0.05
         print "\nsensitivity: " + str(sensitivity)
     elif event.Key == "bracketleft":
-        algo = algo1
-        print "\n**** Setting algo1 ****"
-    elif event.Key == "bracketright":
         algo = algo2
         print "\n**** Setting algo2 ****"
+    elif event.Key == "bracketright":
+        algo = algo3
+        print "\n**** Setting algo3 ****"
     elif event.Key == "minus":
         print "\n**** Now targetting BLUE team ****"
         low = constants.low_blue
