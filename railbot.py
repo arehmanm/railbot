@@ -9,12 +9,12 @@ import constants
 import time
 import os
 import sys
-#change this to your log file's path
+import ping
 
 low = constants.low_blue
 high = constants.high_blue
 
-def algo1():
+def algo1(pingval):
     time1 = datetime.now()
     img = snapshot.snapshot(constants.screen, constants.window, constants.imp)
     print "snapshot: " + str((datetime.now() - time1).microseconds / 1000.0) + " ms"
@@ -33,7 +33,7 @@ def algo1():
     time2 = datetime.now()
     print "shoot: " + str((datetime.now() - time1).microseconds / 1000.0) + " ms"
 
-def algo2():
+def algo2(pingval):
     global sensitivity
     frame1 = 0
     frame2 = 0
@@ -116,10 +116,10 @@ def get_diff(rectpos, rectsize, center1):
     else:
         return (0, 0, 0)
 
-def algo3():
+def algo3(pingval):
     global sensitivity
     frame1 = 0
-    frame2 = 0
+
     time1 = datetime.now()
     img1 = snapshot.snapshot(constants.screen, constants.window, constants.imp)
     diff = (datetime.now() - time1).microseconds
@@ -145,7 +145,7 @@ def algo3():
     y = []
     t = []
     totaltime = 0
-    interval = 0.01
+    interval = 0.005
     sleeptime = interval
     for i in range(3):
         retval = get_diff(rectpos, rectsize, center1)
@@ -158,7 +158,7 @@ def algo3():
             sleeptime =  interval
         print sleeptime
         time.sleep(interval - sleeptime)
-        totaltime = totaltime + time2 + (interval - sleeptime)*1000.0*1000.0
+        totaltime = totaltime + time2 + (interval - sleeptime)*1000*1000
         x.append(center2[0])
         y.append(center2[1])
         t.append(totaltime)
@@ -174,14 +174,14 @@ def algo3():
     v = numpy.polyfit(t, y, 1)
     g = numpy.poly1d(v)
 
-    totaltime = totaltime + (datetime.now() - time1).microseconds + 25000
+    totaltime = totaltime + (datetime.now() - time1).microseconds + int(pingval*1000*1000)
     new_center = (round(f(totaltime)), round(g(totaltime)))
     print totaltime
     print new_center
     mouse.shoot(new_center, constants.screen, constants.window, sensitivity)
     #print "shoot: " + str((datetime.now() - time1).microseconds / 1000.0) + " ms"
 
-sensitivity = 0.9
+sensitivity = 0.7
 algo = algo2
 
 #this function is called everytime a key is pressed.
@@ -196,7 +196,9 @@ def OnKeyPress(event):
         print "disable mouse: " + str((datetime.now() - time1).microseconds / 1000) + " ms"
         time1 = datetime.now()
         #algo1()
-        algo()
+        pingval = ping.do_one('localhost', timeout=1000, psize=1)
+        print "Ping value: " + str(pingval)
+        algo(pingval)
         #mouse.click()
         time2 = datetime.now()
         time3 = time2 - time1
@@ -231,6 +233,7 @@ def OnKeyPress(event):
         high = constants.high_red
 
 mouseid = sys.argv[1]
+server = sys.argv[2]
 #instantiate HookManager class
 new_hook=pyxhook.HookManager()
 #listen to all keystrokes

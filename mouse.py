@@ -4,6 +4,7 @@ import autopy
 from Xlib import X, display
 import uinput
 import time
+import math
 
 device = uinput.Device([
         uinput.BTN_LEFT,
@@ -60,6 +61,10 @@ def shoot2(coords, screen, window, sens=1.0):
     global device
     center = [p/2 for p in window]
     offset = [p-q for p, q in zip(coords, center)]
+    offset_l = math.sqrt(offset[0]*offset[0] + offset[1]*offset[1])
+    print "offset length: " + str(offset_l)
+    sens = sens + (1-sens)*(1 - offset_l/200.0)
+    print "sens: " + str(sens)
     offset =  [int(p*sens) for p in offset]
     #print "offset: " + str(offset)
     
