@@ -196,7 +196,7 @@ def OnKeyPress(event):
         print "disable mouse: " + str((datetime.now() - time1).microseconds / 1000) + " ms"
         time1 = datetime.now()
         #algo1()
-        pingval = ping.do_one(server, timeout=1000, psize=1)
+        pingval = ping.do_one('localhost', timeout=1000, psize=1)
         print "Ping value: " + str(pingval)
         algo(pingval)
         #mouse.click()
