@@ -9,6 +9,7 @@ import constants
 import time
 import os
 import sys
+import math
 #change this to your log file's path
 
 low = constants.low_blue
@@ -84,6 +85,84 @@ def algo2():
         new_center = (multiplier*offset[0]+center2[0], multiplier*offset[1]+center2[1])
         mouse.shoot(new_center, constants.screen, constants.window, sensitivity)
     print "shoot: " + str((datetime.now() - time1).microseconds / 1000.0) + " ms"
+
+def trackPlayer2():
+    global sensitivity
+    global track_player
+    rectpos = constants.diff
+    rectpos = map(operator.sub, rectpos, constants.window)
+    rectpos = map(operator.add, rectpos, constants.screen)
+    rectsize = constants.imp
+    while track_player:
+        print rectpos
+        print rectsize
+        frame1 = 0
+        time1 = datetime.now()
+        img1 = snapshot.screenshot(rectpos, rectsize)
+        diff = (datetime.now() - time1).microseconds
+        frame1 = frame1 + diff/2.0
+        print "snapshot: " + str(diff / 1000.0) + " ms"
+        time1 = datetime.now()
+        retval = calc.getCenter(numpy.array(img1), low, high)
+        diff = (datetime.now() - time1).microseconds
+        frame1 = frame1 + diff
+        print "getCenter: " + str(diff / 1000.0) + " ms"
+        time1 = datetime.now()
+        if retval:
+            (center1, rectpos2, rectsize) = retval
+            center1 = map(operator.add, center1, rectpos)
+            rectpos2 = map(operator.add, rectpos2, rectpos)
+            rectpos = rectpos2
+        else:
+            break
+
+        if center1:
+            mouse.move(center1, constants.screen, constants.window, sensitivity)
+        print "move: " + str((datetime.now() - time1).microseconds / 1000.0) + " ms"
+        time.sleep(0.01)
+    track_player = False
+
+def trackPlayer():
+    global sensitivity
+    global track_player
+    center1 = [p-q/2 for (p,q) in zip(constants.screen, constants.window)]
+    frame1 = 0
+    frame2 = 0
+    while track_player:
+        time1 = datetime.now()
+        img1 = snapshot.snapshot(constants.screen, constants.window, constants.imp)
+        diff = (datetime.now() - time1).microseconds
+        frame2 = frame2 + diff/2.0
+        print "snapshot: " + str(diff / 1000.0) + " ms"
+        time1 = datetime.now()
+        retval = calc.getCenter(numpy.array(img1), low, high)
+        diff = (datetime.now() - time1).microseconds
+        frame2 = frame2 + diff
+        print "getCenter: " + str(diff / 1000.0) + " ms"
+        time1 = datetime.now()
+        if retval:
+            (center2, rectpos, rectsize) = retval
+            diff = [p - q for (p,q) in zip(center2, center1)]
+            dist = math.sqrt(diff[0]*diff[0] + diff[1]*diff[1])
+            if dist < 3 and frame1 > 0:
+                multiplier = (frame2 + 25000.0) / frame1
+                print "Using multiplier: " + str(multiplier)
+                new_center = (multiplier*diff[0]+center1[0], multiplier*diff[1]+center1[1])
+                new_center = [int(p) for p in new_center]
+                new_center = map(operator.add, new_center, constants.diff)
+                print new_center
+                mouse.shoot(new_center, constants.screen, constants.window, sensitivity)
+                break;
+            center1 = center2
+            frame1 = frame2
+        else:
+            break
+
+        if center1:
+            mouse.move(center1, constants.screen, constants.window, constants.imp, sensitivity)
+        print "move: " + str((datetime.now() - time1).microseconds / 1000.0) + " ms"
+        time.sleep(0.025)
+    track_player = False
 
 def get_diff(rectpos, rectsize, center1):
     frame = 0
@@ -183,12 +262,14 @@ def algo3():
 
 sensitivity = 0.9
 algo = algo2
+track_player = False
 
 #this function is called everytime a key is pressed.
 def OnKeyPress(event):
     global low, high
     global sensitivity
     global algo
+    global track_player
     if event.Key == "Shift_L":
         print ""
         time1 = datetime.now()
@@ -229,6 +310,13 @@ def OnKeyPress(event):
         print "\n**** Now targetting RED team ****"
         low = constants.low_red
         high = constants.high_red
+    elif event.Key == "x":
+        track_player = not track_player
+        if track_player:
+            print "turning on tracking..."
+            trackPlayer()
+        else:
+            print "turning off tracking..."
 
 mouseid = sys.argv[1]
 #instantiate HookManager class

@@ -4,6 +4,7 @@ import autopy
 from Xlib import X, display
 import uinput
 import time
+import math
 
 device = uinput.Device([
         uinput.BTN_LEFT,
@@ -70,4 +71,30 @@ def shoot2(coords, screen, window, sens=1.0):
 
 def shoot(coords, screen, window, sens=1.0):
     shoot2(coords, screen, window, sens)
+
+def move2(coords, screen, window, sens=1.0):
+    print "moving to " + str(coords)
+    global device
+    center = [q - p/2 for (q, p) in zip(screen, window)]
+    offset = [p-q for p, q in zip(coords, center)]
+    dist = math.sqrt(offset[0]*offset[0] + offset[1]*offset[1])
+    print dist
+    sens = 1.0 - sens*dist / 250.0
+    print sens
+    offset =  [int(p*sens) for p in offset]
+    #print "offset: " + str(offset)
+
+    device.emit(uinput.REL_X, offset[0])
+    device.emit(uinput.REL_Y, offset[1])
+
+def move(coords, screen, window, imp, sens=1.0):
+    print "moving to " + str(coords)
+    global device
+    center = [p/2 for p in imp]
+    offset = [p-q for p, q in zip(coords, center)]
+    offset =  [int(p) for p in offset]
+    #print "offset: " + str(offset)
+
+    device.emit(uinput.REL_X, offset[0])
+    device.emit(uinput.REL_Y, offset[1])
 
